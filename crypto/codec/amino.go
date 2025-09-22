@@ -17,6 +17,9 @@ func RegisterCrypto(cdc *codec.LegacyAmino) {
 		ed25519.PubKeyName, nil)
 	cdc.RegisterConcrete(&dilithium.PubKey{},
 		dilithium.PubKeyName, nil)
+	// Register aliases to accept CometBFT JSON forms
+	cdc.RegisterConcrete(&dilithium.PubKey{},
+		dilithium.PubKeyNameAlias, nil)
 	cdc.RegisterConcrete(&secp256k1.PubKey{},
 		secp256k1.PubKeyName, nil)
 	cdc.RegisterConcrete(&kmultisig.LegacyAminoPubKey{},
@@ -30,5 +33,8 @@ func RegisterCrypto(cdc *codec.LegacyAmino) {
 		secp256k1.PrivKeyName, nil)
 	cdc.RegisterConcrete(&dilithium.PrivKey{},
 		dilithium.PrivKeyName, nil)
+	// Register aliases to accept CometBFT JSON forms
+	cdc.RegisterConcrete(&dilithium.PrivKey{},
+		dilithium.PrivKeyNameAlias, nil)
 	// cdc.RegisterConcrete(&bls12_381.PrivKey{}, bls12381.PrivKeyName, nil)
 }

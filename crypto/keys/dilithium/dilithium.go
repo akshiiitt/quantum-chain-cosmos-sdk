@@ -23,6 +23,9 @@ const (
     PubKeyName   = "tendermint/PubKeyDilithium2"
     PubKeySize   = 1312
     PrivKeySize  = 2528
+    // Aliases to accept CometBFT-printed amino JSON types (e.g. from `tendermint show-validator`).
+    PubKeyNameAlias  = "cometbft/PubKeyDilithium"
+    PrivKeyNameAlias = "cometbft/PrivKeyDilithium"
 )
 
 var (

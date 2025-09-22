@@ -8,7 +8,6 @@ import (
 	"time"
 
 	cfg "github.com/cometbft/cometbft/config"
-	tmed25519 "github.com/cometbft/cometbft/crypto/ed25519"
 	"github.com/cometbft/cometbft/p2p"
 	"github.com/cometbft/cometbft/privval"
 	cmttypes "github.com/cometbft/cometbft/types"
@@ -71,14 +70,10 @@ func InitializeNodeValidatorFilesFromMnemonic(config *cfg.Config, mnemonic strin
 		return "", nil, fmt.Errorf("could not create directory %q: %w", filepath.Dir(pvStateFile), err)
 	}
 
-	var filePV *privval.FilePV
-	if len(mnemonic) == 0 {
-		filePV = privval.LoadOrGenFilePV(pvKeyFile, pvStateFile)
-	} else {
-		privKey := tmed25519.GenPrivKeyFromSecret([]byte(mnemonic))
-		filePV = privval.NewFilePV(privKey, pvKeyFile, pvStateFile)
-		filePV.Save()
-	}
+	// Always use CometBFT's default priv-validator generator, which in the
+	// Dilithium-enabled fork will create Dilithium keys. We intentionally do not
+	// derive Ed25519 from mnemonic to avoid mismatches with consensus params.
+	filePV := privval.LoadOrGenFilePV(pvKeyFile, pvStateFile)
 
 	tmValPubKey, err := filePV.GetPubKey()
 	if err != nil {
