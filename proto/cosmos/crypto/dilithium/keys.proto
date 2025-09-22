@@ -1,0 +1,32 @@
+syntax = "proto3";
+package cosmos.crypto.dilithium;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/cosmos/cosmos-sdk/crypto/keys/dilithium";
+
+// PubKey is a Dilithium2 public key for handling Tendermint/CometBFT validator keys in SDK.
+// It's needed for Any serialization and SDK compatibility.
+// It must not be used in a non Tendermint/CometBFT validator context because it doesn't implement
+// ADR-28. For application-level usage, define a new proto message following ADR-28.
+message PubKey {
+  option (amino.name) = "tendermint/PubKeyDilithium2";
+  // The Amino encoding is simply the inner bytes field, and not the Amino
+  // encoding of the whole PubKey struct.
+  option (amino.message_encoding)     = "key_field";
+  option (gogoproto.goproto_stringer) = false;
+
+  // Raw Dilithium2 public key bytes
+  bytes key = 1;
+}
+
+// PrivKey defines a Dilithium2 private key.
+// NOTE: Dilithium keys must not be used in SDK apps except in a Tendermint/CometBFT validator context.
+message PrivKey {
+  option (amino.name)             = "tendermint/PrivKeyDilithium2";
+  option (amino.message_encoding) = "key_field";
+
+  // Raw Dilithium2 private key bytes
+  bytes key = 1;
+}
