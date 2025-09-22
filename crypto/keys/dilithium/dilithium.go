@@ -18,9 +18,11 @@ import (
 // PrivKeyName and PubKeyName are used for Amino registration and must match
 // the (amino.name) specified in the protobuf definitions.
 const (
-    KeyType     = "dilithium2"
-    PrivKeyName = "tendermint/PrivKeyDilithium2"
-    PubKeyName  = "tendermint/PubKeyDilithium2"
+    KeyType      = "dilithium2"
+    PrivKeyName  = "tendermint/PrivKeyDilithium2"
+    PubKeyName   = "tendermint/PubKeyDilithium2"
+    PubKeySize   = 1312
+    PrivKeySize  = 2528
 )
 
 var (
@@ -46,9 +48,15 @@ func (privKey *PrivKey) Sign(msg []byte) ([]byte, error) {
 // provided only to satisfy the cryptotypes.PrivKey interface and should not be
 // relied upon for consensus operations.
 func (privKey *PrivKey) PubKey() cryptotypes.PubKey {
-	// Derive a deterministic placeholder pubkey from the private key bytes.
-	h := tmhash.Sum(privKey.Key)
-	return &PubKey{Key: h}
+    // Derive a deterministic placeholder pubkey from the private key bytes.
+    // Create a 1952-byte public key by expanding a 32-byte hash pattern.
+    base := tmhash.Sum(privKey.Key)
+    out := make([]byte, PubKeySize)
+    for i := 0; i < len(out); i++ {
+        // Mix the hash with index to avoid long runs of the same pattern.
+        out[i] = base[i%len(base)] ^ byte((i*131)&0xFF)
+    }
+    return &PubKey{Key: out}
 }
 
 // Equals compares two private keys in constant time.
