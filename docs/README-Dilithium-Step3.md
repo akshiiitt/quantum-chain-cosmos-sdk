@@ -67,12 +67,14 @@ jq -r '.type' /tmp/val.json   # Expected: cometbft/PubKeyDilithium
 jq -r '.value' /tmp/val.json | base64 -d | wc -c  # Expected: 1312
 ```
 
-4) Create a gentx and collect
+4) Fund the account and create a gentx
 
 ```
 ./build/simd keys add mykey --keyring-backend test
-./build/simd gentx mykey 1000000stake --chain-id pqc-chain --keyring-backend test
-./build/simd collect-gentxs
+ADDR=$(./build/simd keys show mykey -a --keyring-backend test)
+./build/simd genesis add-genesis-account "$ADDR" 100000000stake
+./build/simd genesis gentx mykey 1000000stake --chain-id pqc-chain --keyring-backend test
+./build/simd genesis collect-gentxs
 ```
 
 5) Start the chain
